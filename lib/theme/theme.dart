@@ -41,6 +41,10 @@ class BlaColors {
     return BlaColors.greyLight;
   }
 }
+
+class BlaSize {
+  static const double icon = 24;
+}
   
 ///
 /// Definition of App text styles.

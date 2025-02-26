@@ -20,6 +20,11 @@ class Location {
 
   const Location({required this.name, required this.country});
 
+   // Constructor to copy another Location
+  Location.copy(Location other)
+      : name = other.name,
+        country = other.country;
+
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
