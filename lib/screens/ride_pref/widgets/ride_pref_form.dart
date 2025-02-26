@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
- 
+import '/utils/animations_util.dart';
 import '/model/ride/locations.dart';
 import '/model/ride_pref/ride_pref.dart';
 import '/theme/theme.dart';
@@ -63,8 +63,10 @@ class _RidePrefFormState extends State<RidePrefForm> {
 
   /// Handles the selection of the departure location
   void onDeparturePressed() async {
-    final selectedLocation = await Navigator.of(context).push<Location>(
-      MaterialPageRoute(builder: (ctx) => const BlaLocationPicker()),
+    final Location? selectedLocation = await Navigator.of(context).push<Location>(
+      AnimationUtils.createBottomToTopRoute(
+        BlaLocationPicker(initLocation: departure),
+      ),
     );
 
     if (selectedLocation != null) {
@@ -74,8 +76,10 @@ class _RidePrefFormState extends State<RidePrefForm> {
 
   /// Handles the selection of the arrival location
   void onArrivalPressed() async {
-    final selectedLocation = await Navigator.of(context).push<Location>(
-      MaterialPageRoute(builder: (ctx) => const BlaLocationPicker()),
+    final Location? selectedLocation = await Navigator.of(context).push<Location>(
+      AnimationUtils.createBottomToTopRoute(
+        BlaLocationPicker(initLocation: arrival),
+      ),
     );
 
     if (selectedLocation != null) {
@@ -83,15 +87,15 @@ class _RidePrefFormState extends State<RidePrefForm> {
     }
   }
 
+
   /// Swaps the departure and arrival locations if both are selected
   void onSwappingLocationPressed() {
-    if (departure != null && arrival != null) {
-      setState(() {
-        final temp = departure!;
-        departure = Location.copy(arrival!);
-        arrival = Location.copy(temp);
-      });
-    }
+    if (departure == null || arrival == null) return;
+    setState(() {
+      final temp = departure!;
+      departure = Location.copy(arrival!);
+      arrival = Location.copy(temp);
+    });
   }
 
   /// Submits the form.
