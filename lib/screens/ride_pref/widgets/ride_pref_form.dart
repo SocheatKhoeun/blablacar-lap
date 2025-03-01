@@ -8,7 +8,7 @@ import '/utils/date_time_util.dart';
 import '/widgets/actions/bla_button.dart';
 import '/widgets/display/bla_divider.dart';
 import '/widgets/inputs/bla_location_picker.dart';
-import 'ride_pref_input_tile.dart';
+import'ride_pref_input_tile.dart';
 
 class RidePrefForm extends StatefulWidget {
   final RidePref? initRidePref;
@@ -65,14 +65,27 @@ class _RidePrefFormState extends State<RidePrefForm> {
     }
   }
 
-  void onSwappingLocationPressed() {
-    print("Swapping locations");
-    if (departure == null || arrival == null) return;
-    setState(() {
-      final temp = departure!;
-      departure = Location.copy(arrival!);
-      arrival = Location.copy(temp);
-    });
+  void _handleLocationSwitch() {
+    if (departure != null && arrival != null) {
+      setState(() {
+        final temp = departure;
+        departure = arrival;
+        arrival = temp;
+      });
+    }
+  }
+
+  void onDatePressed() async {
+    final DateTime? selectedDate = await showDatePicker(
+      context: context,
+      initialDate: departureDate,
+      firstDate: DateTime.now(),
+      lastDate: DateTime.now().add(Duration(days: 365)),
+    );
+
+    if (selectedDate != null) {
+      setState(() => departureDate = selectedDate);
+    }
   }
 
   void onSubmit() {
@@ -117,7 +130,7 @@ class _RidePrefFormState extends State<RidePrefForm> {
                 leftIcon: Icons.radio_button_checked_outlined,
                 onPressed: onDeparturePressed,
                 rightIcon: switchVisible ? Icons.swap_vert : null,
-                onRightIconPressed: switchVisible ? onSwappingLocationPressed : null,
+                onRightIconPressed: switchVisible ? _handleLocationSwitch : null,
               ),
               const BlaDivider(),
               RidePrefInputTile(
@@ -130,7 +143,7 @@ class _RidePrefFormState extends State<RidePrefForm> {
               RidePrefInputTile(
                 title: dateLabel,
                 leftIcon: Icons.calendar_month,
-                onPressed: () {},
+                onPressed: onDatePressed,
               ),
               const BlaDivider(),
               RidePrefInputTile(
