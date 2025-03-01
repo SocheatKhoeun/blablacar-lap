@@ -3,7 +3,7 @@ import '/model/ride/locations.dart';
 import '/service/locations_service.dart';
 import '/theme/theme.dart';
 
-/// A placeholder widget for selecting a location.
+/// A full-screen modal for selecting a location.
 class BlaLocationPicker extends StatefulWidget {
   final Location? initLocation;
 
@@ -19,32 +19,51 @@ class _BlaLocationPickerState extends State<BlaLocationPicker> {
   @override
   void initState() {
     super.initState();
-    // Initialize filteredLocations with all available locations or based on the initLocation
-    filteredLocations = LocationsService.availableLocations;
+    // Initialize filteredLocations with all locations or based on the initial location
+    filteredLocations = widget.initLocation != null
+        ? getLocationsFor(widget.initLocation!.name)
+        : LocationsService.availableLocations;
   }
 
   void _onBackPressed() => Navigator.of(context).pop();
 
-  void _onLocationSelected(Location location) => Navigator.of(context).pop(location);
+  void _onLocationSelected(Location location) {
+    Navigator.of(context).pop(location);
+  }
 
   void _onSearchChanged(String query) {
     setState(() {
+      // Filter locations based on the search query
       filteredLocations = query.length > 1
           ? LocationsService.availableLocations
-              .where((location) => location.name.toUpperCase().contains(query.toUpperCase()))
+              .where((location) => location.name
+                  .toUpperCase()
+                  .contains(query.toUpperCase()))
               .toList()
-          : LocationsService.availableLocations; // Show all locations when search query is too short
+          : LocationsService.availableLocations;
     });
+  }
+
+  // Filter locations based on the search text
+  List<Location> getLocationsFor(String text) {
+    return LocationsService.availableLocations
+        .where((location) =>
+            location.name.toUpperCase().contains(text.toUpperCase()))
+        .toList();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: BlaSpacings.m, vertical: BlaSpacings.s),
+        padding: const EdgeInsets.symmetric(
+            horizontal: BlaSpacings.m, vertical: BlaSpacings.s),
         child: Column(
           children: [
-            BlaSearchBar(onSearchChanged: _onSearchChanged, onBackPressed: _onBackPressed),
+            BlaSearchBar(
+              onSearchChanged: _onSearchChanged,
+              onBackPressed: _onBackPressed,
+            ),
             Expanded(
               child: ListView.builder(
                 itemCount: filteredLocations.length,
